@@ -13,7 +13,7 @@ class cashRegister:
     def __init__(self, window):
         self.window=window
         window.title('cashRegister')
-        window.attributes('-fullscreen', True)
+        #window.attributes('-fullscreen', True)
         frame=LabelFrame(window, text="Registrar")
         frame.grid(row=0, column=0, columnspan=2, pady=10)
         window.bind('<Return>', self.addItem)
@@ -38,7 +38,7 @@ class cashRegister:
         frameTree=LabelFrame(window, text="Detalle")
         #
         frameTree.grid(row=7, column=0, columnspan=6, pady=5)
-        self.tree = ttk.Treeview(frameTree, column=("c0", "c1", "c2", "c3"), show='headings', height=30)
+        self.tree = ttk.Treeview(frameTree, column=("c0", "c1", "c2", "c3"), show='headings', height=20)
         self.tree.grid(row=0)
         self.tree.column("# 1", anchor=CENTER)
         self.tree.heading("# 1", text="Producto")
@@ -48,9 +48,17 @@ class cashRegister:
         self.tree.heading("# 3", text="Precio")
         self.tree.column("# 4", anchor=CENTER)
         self.tree.heading("# 4", text="Codigo")
+
+        # Scrollbar
+        vbar1 = ttk.Scrollbar(self.tree, orient=VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscrollcommand=vbar1.set)
+        vbar1.pack(side=RIGHT, fill=Y)
+
+        # estilo de texto total
         fontStyle=tkFont.Font(family="Lucida Grande", size=30)
         self.total=Label(window, text='Total: $ 0', font=fontStyle)
         self.total.grid(row=0, column=3)
+
         ttk.Button(window, text='Cancelar compra', command=self.dellAll).grid(row=2, column=3, columnspan=2, sticky= W + E)
         ttk.Button(frameTree, text='Borrar', command=self.dellItem).grid(row=9, column=0, padx=10, columnspan=3, sticky= W + E)
         ttk.Button(frameTree, text='Cobrar', command=self.setCharge).grid(row=10, column=0, pady=10, padx=10, columnspan=3, sticky= W + E)
@@ -141,9 +149,6 @@ class cashRegister:
 
     def dellItem(self):
         self.message['text']=''
-        if len(self.inputCode.get())==0 or len(self.inputCount.get())==0:
-            self.message['text']='Error: Codigo inexistente o producto sin stock.'
-            return
         print(self.tree.item(self.tree.selection())['values'])
         list_temp=[]
         for product in self.listCompra:
@@ -164,24 +169,29 @@ class cashRegister:
         return 'ok'
 
     def setCharge(self):
-        # envio la venta a la tabla de ventas de la base de datos
-        updateVentas=dbSqlite()
-        updateVentas.putVentas(self.listCompra)
-        #
-        # actualizo tabla de stock
-        upStock=dbSqlite()
-        upStock.updateStock(self.listCompra)
-        #
-        # luego de cobrar vacio todo para un nuevo cobro.
-        self.listCompra=[]
-        self.detailItems()
-        self.codigoVenta=int(time.strftime("%d%m%Y%H%M%S"))
-        self.total['text']='Total: $ 0'
-        self.inputCode.delete(0, END)
-        self.inputCount.delete(0, END)
-        self.inputCount.insert(10, 1)
-        self.inputCode.focus()
-        return 'update succes'
+        if len(self.listCompra)>0:
+            # envio la venta a la tabla de ventas de la base de datos
+            updateVentas=dbSqlite()
+            updateVentas.putVentas(self.listCompra)
+            #
+            # actualizo tabla de stock
+            upStock=dbSqlite()
+            upStock.updateStock(self.listCompra)
+            #
+            # luego de cobrar vacio todo para un nuevo cobro.
+            self.listCompra=[]
+            self.detailItems()
+            self.codigoVenta=int(time.strftime("%d%m%Y%H%M%S"))
+            self.total['text']='Total: $ 0'
+            self.inputCode.delete(0, END)
+            self.inputCount.delete(0, END)
+            self.inputCount.insert(10, 1)
+            self.inputCode.focus()
+            return 'update succes'
+        else:
+            self.message['text']=''
+            self.message['text']='Error: No se cargaron productos'
+            return
 
     def dellAll(self):
         self.total['text']='Total: $ 0'
