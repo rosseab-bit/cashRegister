@@ -62,3 +62,10 @@ class dbSqlite:
             cur.execute(query)
             self.sqliteConnection.commit()
         return 'Insert Succes'
+
+    def deleteItemStock(self, item):
+        cur=self.sqliteConnection.cursor()
+        delItem="delete from Stock where Codigo=%s"%(item)
+        cur.execute(delItem)
+        self.sqliteConnection.commit()
+        return 'out: delete success'
