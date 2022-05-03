@@ -38,6 +38,10 @@ class cashRegister:
         self.inputPago.grid(row=2, column=1)
         self.inputPago.insert(10, 0)
         ttk.Button(framePago, text='Calular', command=self.setChange).grid(row=3, columnspan=2, sticky= W + E)
+        #
+        frameExportCSV=LabelFrame(self.window, text="Export Data")
+        frameExportCSV.grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(frameExportCSV, text='Export Ventas', width=20, command=self.exportDataCSVWindow).grid(row=0, columnspan=2, sticky= W + E)
 
         self.message = Label(window, text = '', fg = 'red')
         self.message.grid(row=2, column=0, columnspan=3, sticky = W + E)
@@ -204,6 +208,35 @@ class cashRegister:
             setCambio=float(self.inputPago.get()) - float(total)
             self.cambio['text']='Cambio: $ '+str(round(setCambio, 2))
         return 'out: calculando cambio'
+
+    def exportDataCSVWindow(self):
+        self.exportDataWindow=Toplevel()
+        frameexportDataWindow=LabelFrame(self.exportDataWindow, text="Fecha")
+        frameexportDataWindow.grid(row=0, column=0, columnspan=6, pady=10, padx=5)
+        # formulario para stock
+        Label(frameexportDataWindow, text="Codigo").grid(row=1, column=0)
+        self.inputDate=Entry(frameexportDataWindow)
+        self.inputDate.grid(row=0, column=1, columnspan=2)
+        #self.inputCode.insert(10, self.tree.item(self.tree.selection())['values'][3])
+        self.inputDate.focus()
+        ttk.Button(frameexportDataWindow, text='Exportar', width=30, command=lambda: self.getVentas(self.inputDate.get())).grid(row=1, column=0, columnspan=2, sticky= W + E)
+        return 'out: export csv data'
+
+    def getVentas(self, date):
+        querySearch="select * from Ventas where Fecha like '%{}%'".format(str(date))
+        selectVentas=dbSqlite()
+        scvFilename="database/dataExport."+str(date)+".csv"
+        file=open(scvFilename, 'w')
+        file.write("Ventas_id,Codigo,Producto,Precio,Fecha,Cantidad"+"\n")
+        for venta in selectVentas.selectDB(querySearch):
+            if len(venta)>0:
+                ventaString=[str(v) for v in venta]
+                joinItems=",".join(ventaString)
+                file.write(joinItems+'\n')
+                print(",".join(ventaString))
+        file.close()
+
+        return 'out: export ventas'
 
     def dellAll(self):
         self.total['text']='Total: $ 0'
