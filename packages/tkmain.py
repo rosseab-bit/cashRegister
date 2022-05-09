@@ -80,7 +80,7 @@ class cashRegister:
         self.stockList=[]
 
         # codigo de venta
-        self.codigoVenta=int(time.strftime("%d%m%Y%H%M%S"))
+        self.codigoVenta=int(time.strftime("%Y%m%d%H%M%S"))
 
     def detailItems(self):
         for item in self.tree.get_children():
@@ -190,7 +190,7 @@ class cashRegister:
         # luego de cobrar vacio todo para un nuevo cobro.
         self.listCompra=[]
         self.detailItems()
-        self.codigoVenta=int(time.strftime("%d%m%Y%H%M%S"))
+        self.codigoVenta=int(time.strftime("%Y%m%d%H%M%S"))
         self.total['text']='Total: $ 0'
         self.cambio['text']='Cambio: $ 0'
         self.inputCode.delete(0, END)

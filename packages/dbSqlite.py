@@ -54,7 +54,7 @@ class dbSqlite:
         return 'out: Update success'
 
     def putVentas(self, productos):
-        dateVenta=time.strftime("%d%m%Y")
+        dateVenta=time.strftime("%Y%m%d")
         cur=self.sqliteConnection.cursor()
         for item in productos:
             precioTotal=item[3]*float(item[6])
