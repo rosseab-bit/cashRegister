@@ -225,7 +225,7 @@ class cashRegister:
     def getVentas(self, date):
         querySearch="select * from Ventas where Fecha like '%{}%'".format(str(date))
         selectVentas=dbSqlite()
-        scvFilename="database/dataExport."+str(date)+".csv"
+        scvFilename="database/export/dataExport."+str(date)+".csv"
         file=open(scvFilename, 'w')
         file.write("Ventas_id,Codigo,Producto,Precio,Fecha,Cantidad"+"\n")
         for venta in selectVentas.selectDB(querySearch):
