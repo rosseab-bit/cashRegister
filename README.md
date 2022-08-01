@@ -40,6 +40,7 @@ registrar las compras ingresar el el pago y calcular el vuelto segun el pago rea
 <p align="center"><img src="sources/demo/demo2.png" /></p>
 
 ## Export data
+<p align="center"><img src="sources/demo/demo4.png" /></p>
 Podras exportar los datos de la base de datos hay que ingresar una fecha como un string
 por ej: 2022 => esto te trae los registros de todo el 2022.
 052022 => esto te trae el registro del mes 05 del año 2022.
